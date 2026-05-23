@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "VaagBanda",
+    "slug": "vaagbanda",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F2640"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cybersquadnp.vaagbanda",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F2640"
+      },
+      "package": "com.cybersquadnp.vaagbanda",
+      "edgeToEdgeEnabled": true,
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "426f6ab0-940e-42f8-990b-17f39c7831b4"
+      }
+    }
+  }
+}

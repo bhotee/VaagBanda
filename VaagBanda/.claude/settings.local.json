@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"d:\\\\5TH SEMESTER\\\\SOFTWARE ENGINEERING\\\\VaagBanda\\\\Implementation\" -Recurse -Force)",
+      "Bash(Select-Object -First 100)",
+      "Bash(Format-Table -AutoSize)"
+    ]
+  }
+}
