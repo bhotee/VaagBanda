@@ -13,6 +13,7 @@ import AddExpenseScreen from '../screens/expenses/AddExpenseScreen'
 import SettleUpScreen from '../screens/expenses/SettleUpScreen'
 import InviteMemberScreen from '../screens/groups/InviteMemberScreen'
 import BillScannerScreen from '../screens/expenses/BillScannerScreen'
+import AnalyticsScreen from '../screens/analytics/AnalyticsScreen'
 
 export type GroupStackParamList = {
   GroupsList: undefined
@@ -56,38 +57,33 @@ export default function MainNavigator() {
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarLabelStyle: {
-          fontSize: 11,
-        },
+        tabBarLabelStyle: { fontSize: 11 },
       }}
     >
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>🏠</Text>,
-        }}
+        options={{ tabBarIcon: () => <Text style={{ fontSize: 20 }}>🏠</Text> }}
       />
       <Tab.Screen
         name="Groups"
         component={GroupsNavigator}
-        options={{
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>👥</Text>,
-        }}
+        options={{ tabBarIcon: () => <Text style={{ fontSize: 20 }}>👥</Text> }}
+      />
+      <Tab.Screen
+        name="Analytics"
+        component={AnalyticsScreen}
+        options={{ tabBarIcon: () => <Text style={{ fontSize: 20 }}>📊</Text> }}
       />
       <Tab.Screen
         name="History"
         component={HistoryScreen}
-        options={{
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>📜</Text>,
-        }}
+        options={{ tabBarIcon: () => <Text style={{ fontSize: 20 }}>📜</Text> }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>👤</Text>,
-        }}
+        options={{ tabBarIcon: () => <Text style={{ fontSize: 20 }}>👤</Text> }}
       />
     </Tab.Navigator>
   )
