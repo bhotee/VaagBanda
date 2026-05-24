@@ -35,28 +35,50 @@ export default function HomeScreen() {
   )
 
   const fetchData = async () => {
-    const userId = session?.user?.id
-    if (!userId) { setLoading(false); return }
-    try {
-      const cached = await getLocally('home_' + userId)
-      if (cached) {
-        setName(cached.name); setAvatarUrl(cached.avatarUrl)
-        setTotalOwed(cached.totalOwed); setTotalOwe(cached.totalOwe)
-        setRecentExpenses(cached.recentExpenses); setLoading(false)
-      }
-      const { data: profile } = await supabase.from('profiles').select('full_name, avatar_url').eq('id', userId).single()
-      if (profile) { setName(profile.full_name); setAvatarUrl(profile.avatar_url || null) }
-      const { data: myOwed } = await supabase.from('expense_splits').select('amount_owed, expenses(paid_by)').eq('user_id', userId).eq('is_settled', false)
-      const { data: othersOwe } = await supabase.from('expense_splits').select('amount_owed, expenses(paid_by)').eq('is_settled', false).neq('user_id', userId)
-      const iOwe = myOwed?.filter((s: any) => s.expenses?.paid_by !== userId).reduce((sum: number, s: any) => sum + s.amount_owed, 0) || 0
-      const owedToMe = othersOwe?.filter((s: any) => s.expenses?.paid_by === userId).reduce((sum: number, s: any) => sum + s.amount_owed, 0) || 0
-      setTotalOwe(iOwe); setTotalOwed(owedToMe)
-      const { data: expenses } = await supabase.from('expenses').select('id, title, amount, category, created_at, groups(name)').order('created_at', { ascending: false }).limit(5)
-      setRecentExpenses(expenses || [])
-      await saveLocally('home_' + userId, { name: profile?.full_name || '', avatarUrl: profile?.avatar_url || null, totalOwed: owedToMe, totalOwe: iOwe, recentExpenses: expenses || [] })
-    } catch (error) { console.log('Error:', error) }
-    finally { setLoading(false); setRefreshing(false) }
+  const userId = session?.user?.id
+  if (!userId) { setLoading(false); return }
+  
+  try {
+    // Load cache first
+    const cached = await getLocally('home_' + userId)
+    if (cached) {
+      setName(cached.name || session?.user?.email?.split('@')[0] || 'there')
+      setAvatarUrl(cached.avatarUrl)
+      setTotalOwed(cached.totalOwed)
+      setTotalOwe(cached.totalOwe)
+      setRecentExpenses(cached.recentExpenses)
+      setLoading(false)
+    }
+
+    // Try network
+    const { data: profile } = await supabase.from('profiles').select('full_name, avatar_url').eq('id', userId).single()
+    if (profile) { setName(profile.full_name); setAvatarUrl(profile.avatar_url || null) }
+
+    const { data: myOwed } = await supabase.from('expense_splits').select('amount_owed, expenses(paid_by)').eq('user_id', userId).eq('is_settled', false)
+    const { data: othersOwe } = await supabase.from('expense_splits').select('amount_owed, expenses(paid_by)').eq('is_settled', false).neq('user_id', userId)
+
+    const iOwe = myOwed?.filter((s: any) => s.expenses?.paid_by !== userId).reduce((sum: number, s: any) => sum + s.amount_owed, 0) || 0
+    const owedToMe = othersOwe?.filter((s: any) => s.expenses?.paid_by === userId).reduce((sum: number, s: any) => sum + s.amount_owed, 0) || 0
+
+    setTotalOwe(iOwe); setTotalOwed(owedToMe)
+
+    const { data: expenses } = await supabase.from('expenses').select('id, title, amount, created_at, groups(name)').order('created_at', { ascending: false }).limit(5)
+    setRecentExpenses(expenses || [])
+
+    await saveLocally('home_' + userId, {
+      name: profile?.full_name || '',
+      avatarUrl: profile?.avatar_url || null,
+      totalOwed: owedToMe,
+      totalOwe: iOwe,
+      recentExpenses: expenses || [],
+    })
+  } catch (error) {
+    console.log('Offline - using cache')
+  } finally {
+    setLoading(false)
+    setRefreshing(false)
   }
+}
 
   const onRefresh = () => { setRefreshing(true); fetchData() }
 

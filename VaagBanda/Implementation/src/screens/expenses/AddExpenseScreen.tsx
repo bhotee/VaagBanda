@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { colors } from '../../theme/colors'
 import { typography } from '../../theme/typography'
 import { useFadeIn } from '../../hooks/useAnimation'
+import { sendLocalNotification } from '../../lib/notifications'
 
 const CATEGORIES = [
   { key: 'food', emoji: '🍽️', label: 'Food' },
@@ -81,7 +82,10 @@ export default function AddExpenseScreen() {
 
       const { error: splitError } = await supabase.from('expense_splits').insert(splits)
       if (splitError) throw splitError
-      Alert.alert('Success! 🎉', 'Expense added!', [{ text: 'OK', onPress: () => navigation.goBack() }])
+      sendLocalNotification('Expense Added! 🎉', title + ' - ₩' + Number(amount).toLocaleString())
+Alert.alert('Success! 🎉', 'Expense added!', [
+  { text: 'OK', onPress: () => navigation.goBack() }
+])
     } catch (error: any) {
       Alert.alert('Error', error.message)
     } finally { setLoading(false) }

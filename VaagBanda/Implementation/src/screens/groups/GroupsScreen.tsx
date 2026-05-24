@@ -26,14 +26,27 @@ export default function GroupsScreen() {
     const userId = session?.user?.id
     if (!userId) return
     try {
+      // Load from cache first
       const cached = await getLocally('groups_' + userId)
-      if (cached) { setGroups(cached); setLoading(false) }
+      if (cached && cached.length > 0) {
+        setGroups(cached)
+        setLoading(false)
+      }
+      
+      // Try to fetch from network
       const { data } = await supabase.from('group_members').select('groups(id, name, description, created_at)').eq('user_id', userId)
       const groupList = data?.map((item: any) => item.groups) || []
-      setGroups(groupList)
-      await saveLocally('groups_' + userId, groupList)
-    } catch (error) { console.log('Error:', error) }
-    finally { setLoading(false); setRefreshing(false) }
+      
+      if (groupList.length > 0) {
+        setGroups(groupList)
+        await saveLocally('groups_' + userId, groupList)
+      }
+    } catch (error) {
+      console.log('Offline - using cache')
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }
 
   const onRefresh = () => { setRefreshing(true); fetchGroups() }

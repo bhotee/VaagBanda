@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import AuthNavigator from './AuthNavigator'
 import MainNavigator from './MainNavigator'
 import SplashScreen from '../screens/auth/SplashScreen'
+import { registerForPushNotifications } from '../lib/notifications'
 
 export default function RootNavigator() {
   const { session, loading } = useAuth()
@@ -13,6 +14,12 @@ export default function RootNavigator() {
     const timer = setTimeout(() => setShowSplash(false), 2500)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      registerForPushNotifications(session.user.id)
+    }
+  }, [session])
 
   if (showSplash || loading) return <SplashScreen />
 
